@@ -8,6 +8,8 @@ This project is a complete high-precision GPS tracking system featuring real-tim
 
 Modern GPS tracking systems combine hardware data acquisition with real-time visualization dashboards for telemetry monitoring. From aircraft black boxes and vehicle fleet tracking to autonomous systems navigation, understanding how to capture, display, and analyze GPS data in real-time is essential for aerospace, autonomous systems, and defense technology. This project demonstrates the complete pipeline from sensor hardware to professional web-based visualization, mirroring systems used in safety-critical industrial applications.
 
+<img width="3046" height="1608" alt="image" src="https://github.com/user-attachments/assets/4404c4cf-2375-4160-b435-0a96b3acabb6" />
+
 ## Project Goals
 
 - ✅ Build a functional GPS data logger from hardware components
