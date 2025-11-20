@@ -6,6 +6,31 @@ __pycache__/
 # C extensions
 *.so
 
+# C++ build files and binaries
+build/
+cmake-build-*/
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.dylib
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# C++ documentation (local reference only)
+CPP_DOCUMENTATION.md
+BEGINNERS_BUILD_GUIDE.md
+CPP_BUILD_GUIDE.md
+LIBRARIES_GUIDE.md
+CMakeLists_boost.txt
+
 # Distribution / packaging
 .Python
 build/
