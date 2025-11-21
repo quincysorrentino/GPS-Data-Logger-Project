@@ -204,6 +204,7 @@ private:
             if (!fields[7].empty())
             {
                 current_data_.speed_knots = stod(fields[7]);
+                // convert from knots to km/h
                 current_data_.speed_kmh = current_data_.speed_knots * 1.852;
             }
 
