@@ -23,9 +23,9 @@ app.layout = html.Div([
         center=[43.0731, -89.4012],
         zoom=15,
         children=[
-            # Satellite imagery - Best for defense/tracking applications
-            dl.TileLayer(url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-                        attribution='Tiles &copy; Esri'),
+            # OpenStreetMap - Detailed with all buildings and streets labeled
+            dl.TileLayer(url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        attribution='© OpenStreetMap contributors'),
             dl.LayerGroup(id="layer-group")
         ],
         style={
@@ -34,22 +34,23 @@ app.layout = html.Div([
             'position': 'fixed',
             'top': 0,
             'left': 0,
-            'backgroundColor': '#1a1a1a'
+            'backgroundColor': '#000000'
         }
     ),
     
-    # Stats display - bottom left
+    # Stats display - bottom left (sleek glassmorphism)
     html.Div(id='stats-panel', style={
         'position': 'fixed',
         'bottom': '20px',
         'left': '20px',
-        'backgroundColor': 'rgba(26, 26, 26, 0.92)',
-        'padding': '16px 20px',
-        'borderRadius': '4px',
-        'border': '1px solid rgba(255, 255, 255, 0.1)',
-        'boxShadow': '0 2px 8px rgba(0,0,0,0.3)',
+        'backgroundColor': 'rgba(0, 0, 0, 0.75)',
+        'padding': '20px 24px',
+        'borderRadius': '12px',
+        'border': '1px solid rgba(0, 255, 157, 0.3)',
+        'boxShadow': '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 157, 0.1)',
+        'backdropFilter': 'blur(10px)',
         'zIndex': 1000,
-        'minWidth': '200px'
+        'minWidth': '240px'
     }),
     
     # Update indicator - top right
@@ -57,15 +58,18 @@ app.layout = html.Div([
         'position': 'fixed',
         'top': '20px',
         'right': '20px',
-        'backgroundColor': 'rgba(26, 26, 26, 0.92)',
-        'padding': '8px 14px',
-        'borderRadius': '4px',
-        'border': '1px solid rgba(255, 255, 255, 0.1)',
-        'boxShadow': '0 2px 8px rgba(0,0,0,0.3)',
+        'backgroundColor': 'rgba(0, 0, 0, 0.75)',
+        'padding': '10px 16px',
+        'borderRadius': '8px',
+        'border': '1px solid rgba(0, 255, 157, 0.3)',
+        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
+        'backdropFilter': 'blur(10px)',
         'zIndex': 1000,
-        'fontSize': '11px',
-        'color': '#888',
-        'fontFamily': 'monospace'
+        'fontSize': '12px',
+        'color': '#00ff9d',
+        'fontFamily': 'monospace',
+        'fontWeight': '500',
+        'letterSpacing': '0.5px'
     }),
     
     # Interval component - update every 1 second for real-time feel
@@ -165,109 +169,117 @@ def update_dashboard(n):
     path_positions = [[row['latitude'], row['longitude']] for _, row in df.iterrows()]
     
     map_layers = [
-        # Path trail
+        # Path trail - Neon green glow
         dl.Polyline(
             positions=path_positions,
-            color='#00d4ff',
-            weight=3,
-            opacity=0.8
+            color='#00ff9d',
+            weight=4,
+            opacity=0.9
         ),
-        # Current position - Pulsing circle with direction indicator
+        # Current position - Pulsing neon circle
         dl.CircleMarker(
             center=[current_lat, current_lon],
-            radius=12,
-            color='#00d4ff',
-            fillColor='#0088ff',
-            fillOpacity=0.3,
+            radius=14,
+            color='#00ff9d',
+            fillColor='#00ff9d',
+            fillOpacity=0.4,
             weight=3,
             className='pulse',
             children=[
                 dl.Tooltip(f"Speed: {current_speed:.1f} km/h | Course: {current_course:.0f}°"),
                 dl.Popup([
                     html.Div([
-                        html.H4("Active Target", style={'color': '#fff', 'margin': '0 0 10px 0'}),
-                        html.P(f"Position: {current_lat:.6f}, {current_lon:.6f}", style={'color': '#ccc', 'margin': '5px 0'}),
-                        html.P(f"Speed: {current_speed:.1f} km/h", style={'color': '#ccc', 'margin': '5px 0'}),
-                        html.P(f"Heading: {current_course:.0f}°", style={'color': '#ccc', 'margin': '5px 0'}),
-                        html.P(f"Altitude: {current_alt:.1f} m", style={'color': '#ccc', 'margin': '5px 0'}),
-                        html.P(f"Satellites: {int(current_sats)}", style={'color': '#ccc', 'margin': '5px 0'}),
-                        html.P(f"Signal: {'Good' if current_sats >= 8 else 'Weak'}", style={'color': '#00ff00' if current_sats >= 8 else '#ff9900', 'margin': '5px 0'})
-                    ], style={'backgroundColor': '#1a1a1a', 'padding': '10px'})
+                        html.H4("◉ ACTIVE SIGNAL", style={'color': '#00ff9d', 'margin': '0 0 12px 0', 'fontSize': '14px', 'letterSpacing': '2px', 'fontWeight': '700'}),
+                        html.P(f"LAT  {current_lat:.6f}", style={'color': '#fff', 'margin': '6px 0', 'fontFamily': 'monospace', 'fontSize': '12px'}),
+                        html.P(f"LON  {current_lon:.6f}", style={'color': '#fff', 'margin': '6px 0', 'fontFamily': 'monospace', 'fontSize': '12px'}),
+                        html.Div(style={'borderTop': '1px solid rgba(0, 255, 157, 0.3)', 'margin': '10px 0'}),
+                        html.P(f"SPEED    {current_speed:.1f} km/h", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
+                        html.P(f"HEADING  {current_course:.0f}°", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
+                        html.P(f"ALT      {current_alt:.1f} m", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
+                        html.P(f"SATS     {int(current_sats)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px', 'fontWeight': '600'})
+                    ], style={'backgroundColor': '#000', 'padding': '14px', 'border': '1px solid rgba(0, 255, 157, 0.3)'})
                 ])
             ]
         ),
-        # Direction indicator - Small arrow showing heading
+        # Direction indicator - Bright center dot
         dl.CircleMarker(
             center=[current_lat, current_lon],
-            radius=4,
+            radius=5,
             color='#ffffff',
             fillColor='#ffffff',
             fillOpacity=1.0,
-            weight=1
+            weight=2
         ),
-        # Start position - Small reference marker (use actual first point)
+        # Start position - Dimmed marker
         dl.CircleMarker(
             center=[first_point['latitude'], first_point['longitude']] if first_point else [df.iloc[0]['latitude'], df.iloc[0]['longitude']],
-            radius=5,
-            color='#888888',
-            fillColor='#444444',
-            fillOpacity=0.5,
-            weight=1,
+            radius=6,
+            color='#555555',
+            fillColor='#222222',
+            fillOpacity=0.6,
+            weight=2,
             children=[
-                dl.Tooltip("Origin Point")
+                dl.Tooltip("ORIGIN")
             ]
         )
     ]
     
-    # Dark mode minimal stats display
+    # Sleek cyberpunk stats display
     stats_content = html.Div([
-        # Large speed display
+        # Large speed display with neon glow
         html.Div([
             html.Span(f"{current_speed:.0f}", style={
-                'fontSize': '48px',
+                'fontSize': '64px',
                 'fontWeight': '200',
-                'color': '#00d4ff',
+                'color': '#00ff9d',
                 'lineHeight': '1',
-                'fontFamily': 'monospace'
+                'fontFamily': 'monospace',
+                'textShadow': '0 0 20px rgba(0, 255, 157, 0.6)'
             }),
             html.Span(" km/h", style={
-                'fontSize': '14px',
+                'fontSize': '16px',
                 'color': '#666',
-                'marginLeft': '6px',
-                'verticalAlign': 'bottom'
+                'marginLeft': '8px',
+                'verticalAlign': 'bottom',
+                'letterSpacing': '1px'
             })
-        ], style={'marginBottom': '16px'}),
+        ], style={'marginBottom': '20px'}),
         
-        # Coordinates
+        # Coordinates with monospace styling
         html.Div([
             html.Div([
-                html.Span("LAT ", style={'color': '#666', 'fontSize': '11px', 'fontFamily': 'monospace'}),
-                html.Span(f"{current_lat:.6f}", style={'color': '#aaa', 'fontSize': '13px', 'fontFamily': 'monospace'})
-            ], style={'marginBottom': '4px'}),
+                html.Span("LAT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
+                html.Span(f"{current_lat:.6f}", style={'color': '#00ff9d', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
+            ], style={'marginBottom': '6px'}),
             html.Div([
-                html.Span("LON ", style={'color': '#666', 'fontSize': '11px', 'fontFamily': 'monospace'}),
-                html.Span(f"{current_lon:.6f}", style={'color': '#aaa', 'fontSize': '13px', 'fontFamily': 'monospace'})
-            ], style={'marginBottom': '12px'}),
+                html.Span("LON  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
+                html.Span(f"{current_lon:.6f}", style={'color': '#00ff9d', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
+            ], style={'marginBottom': '16px'}),
         ]),
         
-        # Other stats
+        # Neon separator
+        html.Div(style={'borderTop': '1px solid rgba(0, 255, 157, 0.2)', 'margin': '16px 0', 'boxShadow': '0 0 10px rgba(0, 255, 157, 0.1)'}),
+        
+        # Other stats in grid
         html.Div([
             html.Div([
-                html.Span(f"{current_alt:.0f} ", style={'color': '#aaa', 'fontSize': '14px'}),
-                html.Span("m", style={'color': '#666', 'fontSize': '12px'})
-            ], style={'marginBottom': '6px'}),
+                html.Span("ALT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
+                html.Span(f"{current_alt:.0f} m", style={'color': '#fff', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '300'})
+            ], style={'marginBottom': '8px'}),
             html.Div([
-                html.Span(f"{current_course:.0f}°", style={'color': '#aaa', 'fontSize': '14px'})
-            ], style={'marginBottom': '6px'}),
+                html.Span("HDG  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
+                html.Span(f"{current_course:.0f}°", style={'color': '#fff', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '300'})
+            ], style={'marginBottom': '8px'}),
             html.Div([
-                html.Span(f"{int(current_sats)} ", style={'color': '#aaa', 'fontSize': '14px'}),
-                html.Span("sats", style={'color': '#666', 'fontSize': '12px'})
+                html.Span("SAT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
+                html.Span(f"{int(current_sats)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '500'}),
+                html.Span(f"  {'●' * min(int(current_sats), 12)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'fontSize': '8px', 'marginLeft': '6px'})
             ]),
-        ], style={'borderTop': '1px solid rgba(255,255,255,0.1)', 'paddingTop': '12px', 'marginTop': '12px'})
+        ], style={'marginTop': '12px'})
     ])
     
-    # Last update timestamp
-    last_update = datetime.now().strftime('%H:%M:%S')
+    # Last update timestamp with live indicator
+    last_update = f"● LIVE  {datetime.now().strftime('%H:%M:%S')}"
     
     return (
         map_center,
