@@ -8,7 +8,28 @@ This project is a complete high-precision GPS tracking system featuring real-tim
 
 Modern GPS tracking systems combine hardware data acquisition with real-time visualization dashboards for telemetry monitoring. From aircraft black boxes and vehicle fleet tracking to autonomous systems navigation, understanding how to capture, display, and analyze GPS data in real-time is essential for aerospace, autonomous systems, and defense technology. This project demonstrates the complete pipeline from sensor hardware to professional web-based visualization, mirroring systems used in safety-critical industrial applications.
 
+## Demo
+
+### Real-Time Dashboard in Action
+
+The web-based dashboard provides professional-grade GPS tracking visualization with real-time updates, interactive mapping, and comprehensive telemetry monitoring.
+
 <img width="3046" height="1608" alt="image" src="https://github.com/user-attachments/assets/4404c4cf-2375-4160-b435-0a96b3acabb6" />
+
+
+**Dashboard Features Shown:**
+- **Interactive Map**: Full-screen Leaflet map with Esri World Street Map tiles
+- **Live GPS Trail**: Cyan path showing recent position history (last 100 points)
+- **Pulsing Beacon**: Animated current position marker with real-time updates
+- **Fixed Origin Marker**: Green marker showing starting point
+- **Telemetry Panel**: Real-time stats including:
+  - Current speed (km/h)
+  - Precise coordinates (6 decimal places)
+  - Altitude above sea level
+  - Course heading (degrees true north)
+  - Active satellite count
+  - Last update timestamp
+
 
 ## Project Goals
 
