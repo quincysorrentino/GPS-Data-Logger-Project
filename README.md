@@ -12,24 +12,60 @@ Modern GPS tracking systems combine hardware data acquisition with real-time vis
 
 ### Real-Time Dashboard in Action
 
-The web-based dashboard provides professional-grade GPS tracking visualization with real-time updates, interactive mapping, and comprehensive telemetry monitoring.
+The web-based dashboard provides professional-grade GPS tracking visualization with real-time updates, interactive overlays, and comprehensive telemetry monitoring.
 
-<img width="3046" height="1608" alt="image" src="https://github.com/user-attachments/assets/4404c4cf-2375-4160-b435-0a96b3acabb6" />
+<img width="3046" height="1627" alt="image" src="https://github.com/user-attachments/assets/b32613d1-95a1-4d82-90e8-69b1b479b18c" />
 
 
-**Dashboard Features Shown:**
-- **Interactive Map**: Full-screen Leaflet map with Esri World Street Map tiles
-- **Live GPS Trail**: Cyan path showing recent position history (last 100 points)
-- **Pulsing Beacon**: Animated current position marker with real-time updates
-- **Fixed Origin Marker**: Green marker showing starting point
-- **Telemetry Panel**: Real-time stats including:
-  - Current speed (km/h)
-  - Precise coordinates (6 decimal places)
-  - Altitude above sea level
-  - Course heading (degrees true north)
-  - Active satellite count
-  - Last update timestamp
+**Dashboard Features:**
 
+**Interactive Control Panel (Top Left):**
+
+- **Toggleable Overlays**: Click checkboxes to show/hide features
+  - Path Trail: Real-time GPS route with neon green rendering
+  - Speed Graph: Live speed-over-time chart (bottom center)
+  - Speed Heatmap: Color-coded dots showing velocity (purple=slow, orange=medium, red=fast)
+  - Trip Statistics: Detailed metrics panel (bottom right)
+
+**Live Map Display:**
+
+- **Full-screen interactive map** with OpenStreetMap tiles showing streets, buildings, and landmarks
+- **Neon green GPS trail** with smooth real-time updates (0.5s refresh)
+- **Pulsing current position marker** with detailed popup (coordinates, speed, heading, altitude, satellites)
+- **Origin point marker** showing trip starting location
+- **Zoom and pan controls** for detailed route inspection
+
+**Real-Time Telemetry Panel (Bottom Left):**
+
+- **Large speed display** (64px) with neon glow effect
+- **GPS coordinates** with 6 decimal precision
+- **Altitude** above sea level
+- **Heading** in degrees true north
+- **Satellite count** with visual signal strength indicators (● ● ●)
+
+**Speed Profile Graph (Toggleable):**
+
+- Real-time line chart showing speed variations over trip
+- Green gradient fill with transparent background
+- X-axis: Data point timeline
+- Y-axis: Speed in km/h
+
+**Trip Statistics Panel (Toggleable):**
+
+- **Total Distance**: Calculated using haversine formula
+- **Average Speed**: Mean velocity across entire trip
+- **Max Speed**: Peak velocity recorded
+- **Altitude Range**: Min-max elevation span
+- **Data Points**: Total GPS readings captured
+
+**Speed-Based Heatmap (Toggleable):**
+
+- **Color gradient visualization**:
+  - Purple circles = Slow/stopped (0-50 km/h)
+  - Orange circles = Medium speed (50-75 km/h)
+  - Red circles = Fast (75-100+ km/h)
+- Shows where speed changes occurred along route
+- Semi-transparent overlapping circles for density visualization
 
 ## Project Goals
 
