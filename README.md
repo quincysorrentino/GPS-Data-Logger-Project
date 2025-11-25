@@ -2,368 +2,172 @@
 
 ## Overview
 
-This project is a complete high-precision GPS tracking system featuring real-time visualization, data logging, and professional-grade monitoring capabilities. Built on a Raspberry Pi 5 with Adafruit Ultimate GPS HAT, the system captures and displays location, speed, altitude, and timing information with a web-based dashboard. This type of system is fundamental to flight data recorders, vehicle telemetry systems, autonomous navigation, and real-time tracking applications used in aerospace, defense, and industrial monitoring.
+A high-precision GPS tracking system with real-time visualization, data logging, and professional-grade monitoring. Built on Raspberry Pi 5 with Adafruit Ultimate GPS HAT, featuring a C++ logger with async serial I/O using Boost.Asio, and a web dashboard with interactive mapping.
 
-## Motivation
+**Key Capabilities:**
 
-Modern GPS tracking systems combine hardware data acquisition with real-time visualization dashboards for telemetry monitoring. From aircraft black boxes and vehicle fleet tracking to autonomous systems navigation, understanding how to capture, display, and analyze GPS data in real-time is essential for aerospace, autonomous systems, and defense technology. This project demonstrates the complete pipeline from sensor hardware to professional web-based visualization, mirroring systems used in safety-critical industrial applications.
+- Sub-second real-time position tracking with 0.5s dashboard updates
+- High-performance C++ logger: 2-5% CPU, 2MB RAM, <100ms latency
+- NMEA 0183 protocol parser with checksum validation
+- Interactive web dashboard with toggleable overlays (speed heatmap, path trails, statistics)
 
 ## Demo
 
 ### Real-Time Dashboard in Action
 
-The web-based dashboard provides professional-grade GPS tracking visualization with real-time updates, interactive overlays, and comprehensive telemetry monitoring.
+![Dashboard Demo GIF](assets\demo.gif)
 
-<img width="3046" height="1627" alt="image" src="https://github.com/user-attachments/assets/b32613d1-95a1-4d82-90e8-69b1b479b18c" />
+#### Dashboard Satellite View
 
+![Dashboard Satellite View](assets\dashboard_sat.png)
+
+#### Dashboard OpenStreetMap View
+
+![Dashboard OpenStreetMap View](assets\dashboard_opensat.png)
+
+> **Live GPS tracking system** featuring sub-second updates, multiple map base layers (Dark Matter, OpenStreetMap, Satellite), and dynamic overlays for speed analysis and route visualization.
 
 **Dashboard Features:**
 
 **Interactive Control Panel (Top Left):**
 
 - **Toggleable Overlays**: Click checkboxes to show/hide features
-  - Path Trail: Real-time GPS route with neon green rendering
-  - Speed Graph: Live speed-over-time chart (bottom center)
+  - Path Trail: Real-time GPS route
+  - Speed Graph: Live speed-over-time chart
   - Speed Heatmap: Color-coded dots showing velocity (purple=slow, orange=medium, red=fast)
-  - Trip Statistics: Detailed metrics panel (bottom right)
+  - Trip Statistics: Detailed metrics panel
 
-**Live Map Display:**
+### Key Technical Features
 
-- **Full-screen interactive map** with OpenStreetMap tiles showing streets, buildings, and landmarks
-- **Neon green GPS trail** with smooth real-time updates (0.5s refresh)
-- **Pulsing current position marker** with detailed popup (coordinates, speed, heading, altitude, satellites)
-- **Origin point marker** showing trip starting location
-- **Zoom and pan controls** for detailed route inspection
+- **Asynchronous Data Acquisition**: Boost.Asio for non-blocking serial I/O
+- **NMEA Protocol Parser**: Custom implementation with checksum validation
+- **Multiple Map Layers**: Dark Matter (default), OpenStreetMap, Satellite imagery
+- **Real-time Overlays**: Toggleable path trails, speed graphs, and heatmaps
 
-**Real-Time Telemetry Panel (Bottom Left):**
+---
 
-- **Large speed display** (64px) with neon glow effect
-- **GPS coordinates** with 6 decimal precision
-- **Altitude** above sea level
-- **Heading** in degrees true north
-- **Satellite count** with visual signal strength indicators (● ● ●)
+## Hardware
 
-**Speed Profile Graph (Toggleable):**
+### System Overview
 
-- Real-time line chart showing speed variations over trip
-- Green gradient fill with transparent background
-- X-axis: Data point timeline
-- Y-axis: Speed in km/h
+#### Complete System
 
-**Trip Statistics Panel (Toggleable):**
+<img src="assets\full.jpg" alt="Complete System" width="500" />
 
-- **Total Distance**: Calculated using haversine formula
-- **Average Speed**: Mean velocity across entire trip
-- **Max Speed**: Peak velocity recorded
-- **Altitude Range**: Min-max elevation span
-- **Data Points**: Total GPS readings captured
+#### Raspberry Pi with GPS HAT
 
-**Speed-Based Heatmap (Toggleable):**
+<img src="assets\pi.jpg" alt="Raspberry Pi with GPS HAT" width="500" />
 
-- **Color gradient visualization**:
-  - Purple circles = Slow/stopped (0-50 km/h)
-  - Orange circles = Medium speed (50-75 km/h)
-  - Red circles = Fast (75-100+ km/h)
-- Shows where speed changes occurred along route
-- Semi-transparent overlapping circles for density visualization
+#### External GPS Antenna
 
-## Project Goals
+<img src="assets\antenna.jpg" alt="External GPS Antenna" width="500" />
 
-- [ ] Build a functional GPS data logger from hardware components
-- [ ] Interface with GPS modules and parse NMEA data formats
-- [ ] Implement efficient data logging to handle continuous sensor streams
-- [x] Create real-time web dashboard with industrial-grade visualization
-- [x] Implement GPS stream simulation for testing and development
-- [x] Analyze logged data to calculate statistics and visualize tracks
+### Bill of Materials
 
-## Hardware Components
+| Component                     | Specification                      | Purpose                               | Link                                              |
+| ----------------------------- | ---------------------------------- | ------------------------------------- | ------------------------------------------------- |
+| **Raspberry Pi 5**            | 4GB RAM, BCM2712 quad-core         | Main computing platform               | [Adafruit](https://www.adafruit.com/product/5812) |
+| **Adafruit Ultimate GPS HAT** | PA1616S chipset, 99 channels       | GPS receiver with UART interface      | [Adafruit](https://www.adafruit.com/product/2324) |
+| **External GPS Antenna**      | 28dB gain, 5m cable, SMA connector | Active antenna for improved reception | [Adafruit](https://www.adafruit.com/product/960)  |
+| **MicroSD Card**              | 32GB Class 10                      | OS and data storage                   | -                                                 |
+| **Power Supply**              | 5V 3A USB-C                        | Raspberry Pi power                    | -                                                 |
 
-### Core Components
+### Technical Specifications
 
-- **Raspberry Pi 5 (4GB RAM)** - Main computing platform
-- **Adafruit Ultimate GPS HAT** - GPS receiver module with built-in RTC
-- **External Active GPS Antenna (28dB, 5m SMA)**
+**GPS Module (PA1616S):**
 
-## Technical Specifications
+- **Sensitivity**: -165 dBm (excellent urban performance)
+- **Update Rate**: 1-10 Hz (configurable)
+- **Accuracy**: ±3 meters horizontal (ideal conditions)
+- **Time to First Fix**:
+  - Cold start: ~30 seconds
+  - Warm start: ~5 seconds (with RTC battery backup)
+- **Channels**: 99 acquisition channels (66 tracking)
+- **Satellite Systems**: GPS + GLONASS + Galileo
+- **Communication**: UART serial @ 9600 baud, NMEA 0183 protocol
 
-### GPS Module Capabilities
+**Raspberry Pi Integration:**
 
-- Sensitivity: -165 dBm
-- Update rate: 10 Hz (configurable down to 1 Hz for power savings)
-- Channels: 99 search channels
-- Systems: GPS + GLONASS support
-- Accuracy: ~3 meters horizontal (typical with clear sky view)
-- Time to first fix: ~30 seconds (warm start with RTC battery)
+- **Interface**: Hardware UART on GPIO 14/15 (pins 8/10)
+- **Device Path**: `/dev/serial0` (primary UART)
+- **Power Consumption**: ~150mA @ 3.3V
+- **PPS Output**: GPIO 4 (precise timing signal)
+
+### System Architecture
+
+```
+GPS Satellites
+    ↓ (L1 1575.42 MHz)
+External Active Antenna (28dB amplification)
+    ↓ (SMA cable - 5 meters)
+GPS HAT Module (PA1616S chipset)
+    ↓ (UART @ 9600 baud - NMEA sentences)
+Raspberry Pi 5 (GPIO pins 8/10)
+    ↓ (Serial read /dev/serial0)
+C++ Logger (Boost.Asio async I/O)
+    ↓ (CSV file write)
+Data Files (logs/ directory)
+    ↓ (File polling every 1s)
+Python Dashboard (Plotly Dash)
+    ↓ (HTTP @ port 8050)
+Web Browser (Real-time visualization)
+```
+
+### Hardware Integration
+
+**Physical Assembly:**
+
+- GPS HAT mounted on 40-pin GPIO header with UART alignment (TX/RX pins 8/10)
+- External antenna connected via uFL connector
+- Powered by 5V 3A USB-C supply
+- CR1220 coin cell battery for RTC backup (faster warm starts)
+
+**Signal Path:**
+
+- Antenna → GPS module → UART (9600 baud) → Raspberry Pi GPIO → Logger software
+- PPS (Pulse Per Second) signal on GPIO 4 for precision timing
 
 ### Communication Protocol
 
-The GPS module communicates via UART serial at 9600 baud using NMEA 0183 format. Key NMEA sentences include:
+**NMEA 0183 Sentences Parsed:**
 
-- GPGGA: Position fix data
-- GPRMC: Recommended minimum navigation information
-- GPGSA: GPS DOP and active satellites
-- GPGSV: Satellites in view
+- `$GPGGA` / `$GNGGA`: Position fix data, altitude, satellites
+- `$GPRMC` / `$GNRMC`: Velocity, course, timestamp
+- `$GPGSA` / `$GNGSA`: DOP values, fix quality
+- `$GPGSV` / `$GNGSV`: Satellite visibility data
 
-## System Architecture
+**Data Flow:**
 
-The GPS tracking system integrates hardware data acquisition with real-time web-based visualization:
+1. GPS module outputs NMEA sentences at 9600 baud
+2. C++ logger reads serial stream asynchronously
+3. Parser validates checksums and extracts fields
+4. Data written to timestamped CSV files
+5. Dashboard polls latest CSV and updates UI
 
-### 1. Hardware Data Acquisition Layer
+## Technical Stack
 
-The GPS HAT mounts directly onto the Raspberry Pi's 40-pin GPIO header, using hardware UART (pins 8 and 10) for GPS communication and GPIO pin 4 for PPS (Pulse Per Second) signal. The external 28dB active antenna connects via uFL connector on the HAT.
+**Languages & Frameworks:**
 
-### 2. Data Processing Pipeline
+- C++11 with Boost.Asio (async I/O, cross-platform serial communication)
+- Python 3 with Plotly Dash (web framework), Dash-Leaflet (mapping), pandas (data processing)
 
-**GPS Logger - Available in Two Implementations:**
+**Hardware:**
 
-#### C++ Implementation (`gps_logger_boost.cpp`) - **RECOMMENDED for Production**
+- Raspberry Pi 5 (BCM2712 quad-core, hardware UART)
+- Adafruit Ultimate GPS HAT (PA1616S chipset, 99-channel receiver)
+- External active GPS antenna (28dB gain, SMA connector)
 
-- Native C++11 code with Boost.Asio for maximum performance
-- Cross-platform: Windows (COM ports) and Linux/Raspberry Pi (serial ports)
-- Asynchronous serial communication for better throughput
-- Reads NMEA sentences at 9600 baud
-- Parses GGA (position/altitude) and RMC (speed/course) sentences
-- Built-in NMEA checksum validation
-- Writes CSV files with identical format to Python version
-- **Performance:** ~2-5% CPU usage, ~2MB memory footprint
-- **Advantages:** Lower resource usage, faster startup, better for embedded systems
-- See [CPP_SETUP.md](CPP_SETUP.md) for setup and compilation instructions
+**Protocols & Standards:**
 
-#### Python Implementation (`gps_logger.py`) - **For Development/Prototyping**
+- NMEA 0183 (GPS data sentences: GGA, RMC, GSA, GSV)
+- UART serial @ 9600 baud
+- CSV data logging format
+- HTTP web server (port 8050)
 
-- Reads NMEA sentences from `/dev/serial0` at 9600 baud
-- Parses GGA (position/altitude) and RMC (speed/course) sentences using pynmea2
-- Extracts fields: latitude, longitude, altitude, speed (knots and km/h), course, satellites, HDOP, fix quality
-- Professional logging module with configurable levels
-- Writes timestamped CSV files with data integrity (immediate flush)
-- Handles missing data with appropriate defaults
-- **Performance:** ~10-15% CPU usage, ~50MB memory footprint
+**Build System:**
 
-**Both implementations produce identical CSV output format, fully compatible with the dashboard.**
-
-### 3. Real-Time Visualization Layer
-
-**Web Dashboard (`dashboard.py`)**
-
-- Plotly Dash web application on port 8050
-- Dash-Leaflet interactive mapping
-- Dark mode minimalist UI with industrial design
-- Updates every 0.5 seconds for real-time tracking
-- Displays last 100 GPS positions with fixed origin marker
-- Stats panel with speed, coordinates (6 decimal precision), altitude, course, satellites
-- Pulsing cyan beacon for current position
-- Map tiles: Esri World Street Map
-
-### 4. Testing and Simulation
-
-**GPS Stream Simulator (`gps_stream_simulator.py`)**
-
-- Random walk algorithm generating realistic GPS paths
-- Variable speed (10-80 km/h) and periodic direction changes
-- Simulated satellite count and HDOP values
-- No hardware required for development and testing
-
-### Data Flow
-
-```
-GPS Satellites → GPS Antenna → GPS Module → UART → gps_logger (C++ or Python) → CSV Files → dashboard.py → Web Browser
-                                                                                    ↑
-                                                                        gps_stream_simulator.py (for testing)
-```
-
-## Quick Start
-
-### Python Dashboard (Works with both loggers)
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run dashboard
-python dashboard.py
-
-# Visit: http://localhost:8050
-```
-
-### C++ Logger Setup
-
-See [CPP_SETUP.md](CPP_SETUP.md) for complete installation and build instructions.
-
-**Quick build:**
-
-```bash
-mkdir build && cd build
-cmake ..
-make  # or: cmake --build .
-```
-
-## Features
-
-### Real-Time GPS Tracking
-
-- [x] Live position updates every 0.5 seconds
-- [x] Interactive fullscreen map with zoom/pan controls
-- [x] GPS trail showing all last positions
-- [x] Fixed origin marker at starting point
-- [x] Automatic map centering on current position
-
-### Telemetry Display
-
-- **Large speed display**
-- **Latitude/Longitude**
-- **Altitude** (meters above sea level)
-- **Course** (degrees true north)
-- **Satellite count** (fix quality indicator)
-- **Timestamp** (last update time)
-
-### Data Logging
-
-- CSV format with headers for easy analysis
-- Fields: timestamp, latitude, longitude, altitude, speed_knots, speed_kmh, course, satellites, hdop, fix_quality
-- Timestamped log filenames: `gps_log_YYYYMMDD_HHMMSS.csv`
-
-### Testing and Development
-
-- [x] Realistic GPS path simulator
-- [x] Random walk with variable speed and direction
-- [x]Periodic course changes every 15-30 seconds
-
-## Usage
-
-### Running the GPS Logger
-
-**Option 1: C++ Logger (Recommended for production)**
-
-First, compile the C++ logger (see [CPP_BUILD_GUIDE.md](CPP_BUILD_GUIDE.md)):
-
-```bash
-# Windows
-cd build
-cmake ..
-cmake --build .
-.\bin\gps_logger.exe
-
-# Raspberry Pi / Linux
-mkdir build && cd build
-cmake ..
-make
-sudo ./bin/gps_logger
-```
-
-**Option 2: Python Logger (For development/testing)**
-
-```bash
-python gps_logger.py
-```
-
-**Output:**
-
-- CSV file saved to `logs/gps_log_YYYYMMDD_HHMMSS.csv`
-- Console logging shows GPS fix status and position updates
-- Press `Ctrl+C` to stop logging gracefully
-
-### Running the Real-Time Dashboard
-
-Launch the web dashboard for live GPS tracking visualization:
-
-```bash
-python dashboard.py
-```
-
-**Access the dashboard:**
-
-- Local: `http://localhost:8050`
-- Remote: `http://<raspberry-pi-ip>:8050`
-
-**Dashboard controls:**
-
-- Auto-updates every 0.5 seconds
-- Zoom: Mouse wheel or +/- buttons
-- Pan: Click and drag map
-- Stats panel (bottom-left): Speed, Lat/Lon, Altitude, Course, Satellites
-- Timestamp (top-right): Last update time
-
-### Running the GPS Simulator (for testing)
-
-Generate realistic simulated GPS data for development and testing:
-
-```bash
-python gps_stream_simulator.py
-```
-
-**Features:**
-
-- Creates new GPS log file in `logs/` directory
-- Random walk algorithm with 10-80 km/h speed
-- Periodic direction changes every 15-30 seconds
-- Updates every 1 second
-- Run simultaneously with `dashboard.py` to visualize simulated tracking
-
-**Use cases:**
-
-- Dashboard development without GPS hardware
-- Testing visualization features
-- Demonstrating system capabilities indoors
-- Training and demos
-
-## Data Format
-
-### CSV Log Structure
-
-Each log entry contains the following fields:
-
-- **timestamp**: ISO 8601 format UTC timestamp
-- **latitude**: Decimal degrees (6 decimal precision)
-- **longitude**: Decimal degrees (6 decimal precision)
-- **altitude**: Meters above sea level (-999.0 if invalid)
-- **speed_knots**: Speed in nautical miles per hour
-- **speed_kmh**: Speed in kilometers per hour
-- **course**: Direction in degrees true north (-1.0 if invalid)
-- **satellites**: Number of satellites used in fix
-- **hdop**: Horizontal Dilution of Precision (accuracy indicator)
-- **fix_quality**: 0=invalid, 1=GPS fix, 2=DGPS fix
-
-### Example CSV Output
-
-```csv
-timestamp,latitude,longitude,altitude,speed_knots,speed_kmh,course,satellites,hdop,fix_quality
-2024-11-14T15:30:45.123456,43.073125,-89.401234,258.3,0.0,0.0,45.2,8,1.2,1
-2024-11-14T15:30:46.123456,43.073128,-89.401230,258.5,2.5,4.6,46.1,8,1.2,1
-2024-11-14T15:30:47.123456,43.073132,-89.401225,258.7,5.1,9.4,47.3,9,1.1,1
-```
-
-## Applications
-
-This GPS tracking system demonstrates principles applicable to:
-
-- **Aerospace**: Flight data recorders, UAV navigation, aircraft telemetry
-- **Automotive**: Vehicle tracking, fleet management, autonomous navigation
-- **Defense**: Military vehicle tracking, reconnaissance, tactical navigation
-- **Emergency Services**: Search and rescue, first responder tracking
-- **Industrial**: Asset tracking, construction equipment monitoring, logistics
-- **Scientific**: Wildlife tracking, environmental monitoring, surveying
-- **Sports**: Athletic performance analysis, race timing, training analytics
-
-## Learning Outcomes
-
-This project provides hands-on experience with:
-
-- **C++ Programming**: Modern C++11 features, cross-platform development, serial communication
-- **Python Programming**: Real-time web applications, data visualization, geospatial libraries
-- Serial communication protocols (UART at 9600 baud)
-- ASCII data parsing (NMEA 0183 format)
-- Real-time data acquisition and processing
-- Professional logging and error handling
-- CSV file I/O and data persistence
-- GPS technology and satellite navigation fundamentals
-- Sensor accuracy analysis and error sources (HDOP, multipath)
-- Embedded systems development on Raspberry Pi
-- Hardware module integration (GPIO, UART, HATs)
-- Web application development (Plotly Dash framework)
-- Interactive mapping and geospatial visualization
-- Real-time telemetry display and monitoring
-- Dark mode UI/UX design principles
-- Testing and simulation for hardware-independent development
+- CMake (cross-platform C++ builds)
+- pip/requirements.txt (Python dependencies)
 
 ## Additional Resources
 
@@ -378,9 +182,9 @@ This project provides hands-on experience with:
 
 ### Python Libraries
 
-- [pynmea2 Documentation](https://github.com/Knio/pynmea2)
 - [pandas Documentation](https://pandas.pydata.org/docs/)
-- [Python Serial Communication](https://pyserial.readthedocs.io/)
+- [Plotly Dash Documentation](https://dash.plotly.com/)
+- [Dash-Leaflet Documentation](https://www.dash-leaflet.com/)
 
 ### C++ Resources
 
@@ -393,21 +197,3 @@ This project provides hands-on experience with:
 - [GPS.gov - Official U.S. Government GPS Information](https://www.gps.gov/)
 - [GPS Accuracy Factors and Limitations](https://www.gps.gov/systems/gps/performance/accuracy/)
 - [Understanding HDOP and GPS Accuracy](<https://en.wikipedia.org/wiki/Dilution_of_precision_(navigation)>)
-
-## Conclusion
-
-This GPS tracking system successfully demonstrates the complete pipeline from hardware sensor integration to real-time web-based visualization. The project combines embedded systems development, serial communication protocols, NMEA data parsing, professional data logging, and modern web dashboard technologies to create a functional tracking system applicable to aerospace, defense, automotive, and industrial applications.
-
-The system features:
-
-- **Dual implementation**: C++ for production performance, Python for rapid development
-- **Real-time tracking** with sub-second update rates
-- **Professional telemetry display** with speed, position, altitude, course, and satellite monitoring
-- **Industrial-grade UI** with minimalist dark mode design and pulsing beacon markers
-- **Hardware simulation** enabling development and testing without GPS equipment
-- **Production-quality logging** with proper error handling and data integrity
-- **Cross-platform compatibility**: Windows and Linux/Raspberry Pi
-
-The skills and technologies demonstrated in this project—including C++ and Python programming, Raspberry Pi hardware integration, UART serial communication, NMEA protocol parsing, real-time data acquisition, web-based telemetry dashboards, and geospatial visualization—are directly applicable to safety-critical systems used in aircraft flight data recorders, autonomous vehicle navigation, military reconnaissance, fleet management, search and rescue operations, and precision surveying.
-
-The completed system serves as both an educational platform for learning GPS technology and embedded systems development, and a functional tool for real-world tracking and navigation applications.

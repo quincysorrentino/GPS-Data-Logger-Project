@@ -41,8 +41,8 @@ def generate_gps_point(point_num):
         current_course = (current_course + course_change) % 360
     
     # Random speed changes (acceleration/deceleration)
-    speed_change = random.uniform(-3, 3)
-    current_speed = max(5, min(30, current_speed + speed_change))  # Keep between 10-80 km/h
+    speed_change = random.uniform(-20, 20)
+    current_speed = max(5, min(100, current_speed + speed_change))
     
     # Calculate movement based on speed and course
     # Speed in km/h, convert to degrees per second (rough approximation)

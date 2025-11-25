@@ -1,7 +1,6 @@
 /*
  * GPS Data Logger - C++ Implementation with Boost Libraries
  * Uses Boost.Asio for serial communication and modern C++ practices
- * Compatible with Python dashboard for real-time visualization
  */
 
 #include <iostream>

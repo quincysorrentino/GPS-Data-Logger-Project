@@ -18,16 +18,89 @@ app = dash.Dash(__name__)
 
 # Store for overlay toggles
 app.layout = html.Div([
+    # Header
+    html.Div([
+        html.H1("GPS TELEMETRY", style={
+            'fontSize': '18px',
+            'fontWeight': '600',
+            'letterSpacing': '0.5px',
+            'margin': '0',
+            'background': 'linear-gradient(90deg, #4facfe 0%, #00f2fe 100%)',
+            'WebkitBackgroundClip': 'text',
+            'WebkitTextFillColor': 'transparent',
+            'backgroundClip': 'text',
+            'color': 'transparent'
+        }),
+        html.Div([
+            html.Div(style={
+                'width': '8px',
+                'height': '8px',
+                'borderRadius': '50%',
+                'backgroundColor': '#00ff88',
+                'boxShadow': '0 0 10px #00ff88'
+            }),
+            html.Span(id='last-update', children="Waiting for signal...")
+        ], style={
+            'display': 'flex',
+            'alignItems': 'center',
+            'gap': '8px',
+            'fontSize': '12px',
+            'color': '#a0a0a0'
+        })
+    ], style={
+        'position': 'fixed',
+        'top': '20px',
+        'left': '50%',
+        'transform': 'translateX(-50%)',
+        'padding': '12px 30px',
+        'zIndex': 1002,
+        'display': 'flex',
+        'alignItems': 'center',
+        'gap': '15px',
+        'background': 'rgba(20, 20, 30, 0.75)',
+        'backdropFilter': 'blur(12px)',
+        'WebkitBackdropFilter': 'blur(12px)',
+        'border': '1px solid rgba(255, 255, 255, 0.1)',
+        'borderRadius': '16px',
+        'boxShadow': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'color': '#ffffff'
+    }),
+
     # Fullscreen map with dark tiles
     dl.Map(
         id='gps-map',
         center=[43.0731, -89.4012],
         zoom=15,
         children=[
-            # OpenStreetMap - Detailed with all buildings and streets labeled
-            dl.TileLayer(url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        attribution='© OpenStreetMap contributors'),
-            dl.LayerGroup(id="layer-group")
+            dl.LayersControl(
+                [
+                    dl.BaseLayer(
+                        dl.TileLayer(
+                            url='https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                        ),
+                        name="Dark Matter",
+                        checked=True
+                    ),
+                    dl.BaseLayer(
+                        dl.TileLayer(
+                            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            attribution='&copy; OpenStreetMap contributors'
+                        ),
+                        name="OpenStreetMap"
+                    ),
+                    dl.BaseLayer(
+                        dl.TileLayer(
+                            url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                            attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                        ),
+                        name="Satellite"
+                    ),
+                ] + 
+                [
+                    dl.Overlay(dl.LayerGroup(id="layer-group"), name="Data Layers", checked=True)
+                ]
+            )
         ],
         style={
             'width': '100%',
@@ -35,19 +108,21 @@ app.layout = html.Div([
             'position': 'fixed',
             'top': 0,
             'left': 0,
-            'backgroundColor': '#000000'
+            'backgroundColor': '#1a1a1a'
         }
     ),
     
     # Control Panel - top left (overlay filters)
     html.Div([
-        html.Div("MAP OVERLAYS", style={
-            'color': '#00ff9d',
-            'fontSize': '10px',
-            'fontWeight': '700',
-            'letterSpacing': '2px',
-            'marginBottom': '12px',
-            'fontFamily': 'monospace'
+        html.Div("Map Overlays", style={
+            'color': '#4facfe',
+            'fontSize': '14px',
+            'fontWeight': '600',
+            'textTransform': 'uppercase',
+            'letterSpacing': '1px',
+            'marginBottom': '15px',
+            'borderBottom': '1px solid rgba(255, 255, 255, 0.1)',
+            'paddingBottom': '8px'
         }),
         
         # Show Path Toggle
@@ -56,9 +131,10 @@ app.layout = html.Div([
                 id='show-path',
                 options=[{'label': ' Path Trail', 'value': 'path'}],
                 value=['path'],
-                style={'color': '#fff', 'fontSize': '13px'}
+                style={'color': '#cccccc', 'fontSize': '14px'},
+                inputStyle={"margin-right": "10px", "cursor": "pointer"}
             )
-        ], style={'marginBottom': '8px'}),
+        ], style={'marginBottom': '10px'}),
         
         # Show Speed Graph Toggle
         html.Div([
@@ -66,9 +142,10 @@ app.layout = html.Div([
                 id='show-speed-graph',
                 options=[{'label': ' Speed Graph', 'value': 'speed'}],
                 value=[],
-                style={'color': '#fff', 'fontSize': '13px'}
+                style={'color': '#cccccc', 'fontSize': '14px'},
+                inputStyle={"margin-right": "10px", "cursor": "pointer"}
             )
-        ], style={'marginBottom': '8px'}),
+        ], style={'marginBottom': '10px'}),
         
         # Show Heatmap Toggle
         html.Div([
@@ -76,17 +153,19 @@ app.layout = html.Div([
                 id='show-heatmap',
                 options=[{'label': ' Location Heatmap', 'value': 'heatmap'}],
                 value=[],
-                style={'color': '#fff', 'fontSize': '13px'}
+                style={'color': '#cccccc', 'fontSize': '14px'},
+                inputStyle={"margin-right": "10px", "cursor": "pointer"}
             )
-        ], style={'marginBottom': '8px'}),
+        ], style={'marginBottom': '10px'}),
         
         # Show Statistics Toggle
         html.Div([
             dcc.Checklist(
                 id='show-trip-stats',
                 options=[{'label': ' Trip Statistics', 'value': 'stats'}],
-                value=[],
-                style={'color': '#fff', 'fontSize': '13px'}
+                value=['stats'],
+                style={'color': '#cccccc', 'fontSize': '14px'},
+                inputStyle={"margin-right": "10px", "cursor": "pointer"}
             )
         ])
         
@@ -94,29 +173,36 @@ app.layout = html.Div([
         'position': 'fixed',
         'top': '20px',
         'left': '20px',
-        'backgroundColor': 'rgba(0, 0, 0, 0.85)',
-        'padding': '16px 20px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
+        'padding': '20px',
         'zIndex': 1001,
-        'minWidth': '180px'
+        'minWidth': '220px',
+        'background': 'rgba(20, 20, 30, 0.75)',
+        'backdropFilter': 'blur(12px)',
+        'WebkitBackdropFilter': 'blur(12px)',
+        'border': '1px solid rgba(255, 255, 255, 0.1)',
+        'borderRadius': '16px',
+        'boxShadow': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'color': '#ffffff'
     }),
     
-    # Stats display - bottom left (sleek glassmorphism)
+    # Stats display - bottom left (professional panel)
     html.Div(id='stats-panel', style={
         'position': 'fixed',
         'bottom': '20px',
         'left': '20px',
-        'backgroundColor': 'rgba(0, 0, 0, 0.75)',
-        'padding': '20px 24px',
-        'borderRadius': '12px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 157, 0.1)',
-        'backdropFilter': 'blur(10px)',
+        'padding': '24px',
         'zIndex': 1000,
-        'minWidth': '240px'
+        'minWidth': '280px',
+        'display': 'grid',
+        'gridTemplateColumns': '1fr 1fr',
+        'gap': '15px',
+        'background': 'rgba(20, 20, 30, 0.75)',
+        'backdropFilter': 'blur(12px)',
+        'WebkitBackdropFilter': 'blur(12px)',
+        'border': '1px solid rgba(255, 255, 255, 0.1)',
+        'borderRadius': '16px',
+        'boxShadow': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'color': '#ffffff'
     }),
     
     # Speed Graph - bottom center (conditionally shown)
@@ -124,71 +210,27 @@ app.layout = html.Div([
         dcc.Graph(
             id='speed-graph',
             config={'displayModeBar': False},
-            style={'height': '200px', 'width': '500px'}
+            style={'height': '180px', 'width': '500px'}
         )
-    ], style={
-        'position': 'fixed',
-        'bottom': '20px',
-        'left': '50%',
-        'transform': 'translateX(-50%)',
-        'backgroundColor': 'rgba(0, 0, 0, 0.85)',
-        'padding': '12px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
-        'zIndex': 1000,
-        'display': 'none'  # Hidden by default
-    }),
+    ], style={'display': 'none'}),
     
     # Trip Statistics - bottom right (conditionally shown)
-    html.Div(id='trip-stats-panel', style={
-        'position': 'fixed',
-        'bottom': '20px',
-        'right': '20px',
-        'backgroundColor': 'rgba(0, 0, 0, 0.85)',
-        'padding': '16px 20px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
-        'zIndex': 1000,
-        'minWidth': '200px',
-        'display': 'none'  # Hidden by default
-    }),
-    
-    # Update indicator - top right
-    html.Div(id='last-update', style={
-        'position': 'fixed',
-        'top': '20px',
-        'right': '20px',
-        'backgroundColor': 'rgba(0, 0, 0, 0.75)',
-        'padding': '10px 16px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
-        'zIndex': 1000,
-        'fontSize': '12px',
-        'color': '#00ff9d',
-        'fontFamily': 'monospace',
-        'fontWeight': '500',
-        'letterSpacing': '0.5px'
-    }),
+    html.Div(id='trip-stats-panel', style={'display': 'none'}),
     
     # Interval component - update every 1 second for real-time feel
     dcc.Interval(
         id='interval-component',
-        interval=0.5*1000,
+        interval=1000, # 1 second
         n_intervals=0
     )
 ], style={
-    'fontFamily': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    'fontFamily': '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     'margin': 0,
     'padding': 0,
     'height': '100vh',
     'overflow': 'hidden',
-    'backgroundColor': '#1a1a1a'
+    'backgroundColor': '#1a1a1a',
+    'color': '#e0e0e0'
 })
 
 
@@ -267,33 +309,34 @@ def update_dashboard(n, show_path, show_speed_graph, show_heatmap, show_trip_sta
     df, first_point = load_gps_data()
     
     # Default styles for conditional panels
+    glass_panel_style = {
+        'background': 'rgba(20, 20, 30, 0.75)',
+        'backdropFilter': 'blur(12px)',
+        'WebkitBackdropFilter': 'blur(12px)',
+        'border': '1px solid rgba(255, 255, 255, 0.1)',
+        'borderRadius': '16px',
+        'boxShadow': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'color': '#ffffff',
+        'zIndex': 1000
+    }
+
     speed_graph_style = {
+        **glass_panel_style,
         'position': 'fixed',
         'bottom': '20px',
         'left': '50%',
         'transform': 'translateX(-50%)',
-        'backgroundColor': 'rgba(0, 0, 0, 0.85)',
-        'padding': '12px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
-        'zIndex': 1000,
+        'padding': '15px',
         'display': 'block' if 'speed' in show_speed_graph else 'none'
     }
     
     trip_stats_style = {
+        **glass_panel_style,
         'position': 'fixed',
         'bottom': '20px',
         'right': '20px',
-        'backgroundColor': 'rgba(0, 0, 0, 0.85)',
-        'padding': '16px 20px',
-        'borderRadius': '8px',
-        'border': '1px solid rgba(0, 255, 157, 0.3)',
-        'boxShadow': '0 4px 16px rgba(0, 0, 0, 0.6)',
-        'backdropFilter': 'blur(10px)',
-        'zIndex': 1000,
-        'minWidth': '200px',
+        'padding': '20px',
+        'minWidth': '220px',
         'display': 'block' if 'stats' in show_trip_stats else 'none'
     }
     
@@ -353,9 +396,9 @@ def update_dashboard(n, show_path, show_speed_graph, show_heatmap, show_trip_sta
         map_layers.append(
             dl.Polyline(
                 positions=path_positions,
-                color='#00ff9d',
+                color='#2563eb',
                 weight=4,
-                opacity=0.9
+                opacity=0.8
             )
         )
     
@@ -398,28 +441,28 @@ def update_dashboard(n, show_path, show_speed_graph, show_heatmap, show_trip_sta
     
     # Add current position and markers
     map_layers.extend([
-        # Current position - Pulsing neon circle
+        # Current position - Active marker
         dl.CircleMarker(
             center=[current_lat, current_lon],
             radius=14,
-            color='#00ff9d',
-            fillColor='#00ff9d',
-            fillOpacity=0.4,
+            color='#2563eb',
+            fillColor='#2563eb',
+            fillOpacity=0.3,
             weight=3,
             className='pulse',
             children=[
                 dl.Tooltip(f"Speed: {current_speed:.1f} km/h | Course: {current_course:.0f}°"),
                 dl.Popup([
                     html.Div([
-                        html.H4("◉ ACTIVE SIGNAL", style={'color': '#00ff9d', 'margin': '0 0 12px 0', 'fontSize': '14px', 'letterSpacing': '2px', 'fontWeight': '700'}),
-                        html.P(f"LAT  {current_lat:.6f}", style={'color': '#fff', 'margin': '6px 0', 'fontFamily': 'monospace', 'fontSize': '12px'}),
-                        html.P(f"LON  {current_lon:.6f}", style={'color': '#fff', 'margin': '6px 0', 'fontFamily': 'monospace', 'fontSize': '12px'}),
-                        html.Div(style={'borderTop': '1px solid rgba(0, 255, 157, 0.3)', 'margin': '10px 0'}),
-                        html.P(f"SPEED    {current_speed:.1f} km/h", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
-                        html.P(f"HEADING  {current_course:.0f}°", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
-                        html.P(f"ALT      {current_alt:.1f} m", style={'color': '#aaa', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px'}),
-                        html.P(f"SATS     {int(current_sats)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'margin': '5px 0', 'fontFamily': 'monospace', 'fontSize': '11px', 'fontWeight': '600'})
-                    ], style={'backgroundColor': '#000', 'padding': '14px', 'border': '1px solid rgba(0, 255, 157, 0.3)'})
+                        html.H4("Current Position", style={'color': '#1e40af', 'margin': '0 0 12px 0', 'fontSize': '14px', 'fontWeight': '600'}),
+                        html.P(f"Latitude: {current_lat:.6f}", style={'color': '#333', 'margin': '6px 0', 'fontSize': '12px'}),
+                        html.P(f"Longitude: {current_lon:.6f}", style={'color': '#333', 'margin': '6px 0', 'fontSize': '12px'}),
+                        html.Div(style={'borderTop': '1px solid #e5e7eb', 'margin': '10px 0'}),
+                        html.P(f"Speed: {current_speed:.1f} km/h", style={'color': '#666', 'margin': '5px 0', 'fontSize': '11px'}),
+                        html.P(f"Heading: {current_course:.0f}°", style={'color': '#666', 'margin': '5px 0', 'fontSize': '11px'}),
+                        html.P(f"Altitude: {current_alt:.1f} m", style={'color': '#666', 'margin': '5px 0', 'fontSize': '11px'}),
+                        html.P(f"Satellites: {int(current_sats)}", style={'color': '#2563eb' if current_sats >= 8 else '#dc2626', 'margin': '5px 0', 'fontSize': '11px', 'fontWeight': '600'})
+                    ], style={'backgroundColor': '#fff', 'padding': '14px', 'border': '1px solid #e5e7eb'})
                 ])
             ]
         ),
@@ -432,107 +475,103 @@ def update_dashboard(n, show_path, show_speed_graph, show_heatmap, show_trip_sta
             fillOpacity=1.0,
             weight=2
         ),
-        # Start position - Dimmed marker
+        # Start position - Origin marker
         dl.CircleMarker(
             center=[first_point['latitude'], first_point['longitude']] if first_point else [df.iloc[0]['latitude'], df.iloc[0]['longitude']],
             radius=6,
-            color='#555555',
-            fillColor='#222222',
+            color='#64748b',
+            fillColor='#94a3b8',
             fillOpacity=0.6,
             weight=2,
             children=[
-                dl.Tooltip("ORIGIN")
+                dl.Tooltip("Start")
             ]
         )
     ])
     
-    # Sleek cyberpunk stats display
+    # Professional stats display
     stats_content = html.Div([
-        # Large speed display with neon glow
+        # Large speed display
         html.Div([
             html.Span(f"{current_speed:.0f}", style={
-                'fontSize': '64px',
-                'fontWeight': '200',
-                'color': '#00ff9d',
-                'lineHeight': '1',
-                'fontFamily': 'monospace',
-                'textShadow': '0 0 20px rgba(0, 255, 157, 0.6)'
+                'fontSize': '56px',
+                'fontWeight': '300',
+                'color': '#4facfe',
+                'lineHeight': '1'
             }),
             html.Span(" km/h", style={
                 'fontSize': '16px',
-                'color': '#666',
+                'color': '#a0a0a0',
                 'marginLeft': '8px',
-                'verticalAlign': 'bottom',
-                'letterSpacing': '1px'
+                'verticalAlign': 'bottom'
             })
         ], style={'marginBottom': '20px'}),
         
-        # Coordinates with monospace styling
+        # Coordinates
         html.Div([
             html.Div([
-                html.Span("LAT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
-                html.Span(f"{current_lat:.6f}", style={'color': '#00ff9d', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
-            ], style={'marginBottom': '6px'}),
+                html.Span("Latitude: ", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                html.Span(f"{current_lat:.6f}", style={'color': '#fff', 'fontSize': '13px', 'fontWeight': '500', 'marginLeft': '8px'})
+            ], style={'marginBottom': '6px', 'display': 'flex', 'justifyContent': 'space-between'}),
             html.Div([
-                html.Span("LON  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
-                html.Span(f"{current_lon:.6f}", style={'color': '#00ff9d', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
-            ], style={'marginBottom': '16px'}),
+                html.Span("Longitude: ", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase', 'letterSpacing': '0.5px'}),
+                html.Span(f"{current_lon:.6f}", style={'color': '#fff', 'fontSize': '13px', 'fontWeight': '500', 'marginLeft': '8px'})
+            ], style={'marginBottom': '16px', 'display': 'flex', 'justifyContent': 'space-between'}),
         ]),
         
-        # Neon separator
-        html.Div(style={'borderTop': '1px solid rgba(0, 255, 157, 0.2)', 'margin': '16px 0', 'boxShadow': '0 0 10px rgba(0, 255, 157, 0.1)'}),
+        # Separator
+        html.Div(style={'borderTop': '1px solid rgba(255, 255, 255, 0.1)', 'margin': '16px 0'}),
         
-        # Other stats in grid
+        # Other stats
         html.Div([
             html.Div([
-                html.Span("ALT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
-                html.Span(f"{current_alt:.0f} m", style={'color': '#fff', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '300'})
-            ], style={'marginBottom': '8px'}),
+                html.Span("Altitude", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+                html.Span(f"{current_alt:.0f} m", style={'color': '#fff', 'fontSize': '14px', 'fontWeight': '500'})
+            ], style={'marginBottom': '8px', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'}),
             html.Div([
-                html.Span("HDG  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
-                html.Span(f"{current_course:.0f}°", style={'color': '#fff', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '300'})
-            ], style={'marginBottom': '8px'}),
+                html.Span("Heading", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+                html.Span(f"{current_course:.0f}°", style={'color': '#fff', 'fontSize': '14px', 'fontWeight': '500'})
+            ], style={'marginBottom': '8px', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'}),
             html.Div([
-                html.Span("SAT  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace', 'letterSpacing': '2px'}),
-                html.Span(f"{int(current_sats)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'fontSize': '16px', 'fontFamily': 'monospace', 'fontWeight': '500'}),
-                html.Span(f"  {'●' * min(int(current_sats), 12)}", style={'color': '#00ff9d' if current_sats >= 8 else '#ff6b00', 'fontSize': '8px', 'marginLeft': '6px'})
-            ]),
+                html.Span("Satellites", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+                html.Span(f"{int(current_sats)}", style={'color': '#4facfe' if current_sats >= 8 else '#ff5555', 'fontSize': '14px', 'fontWeight': '600'})
+            ], style={'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'}),
         ], style={'marginTop': '12px'})
     ])
     
     # Last update timestamp with live indicator
-    last_update = f"● LIVE  {datetime.now().strftime('%H:%M:%S')}"
+    last_update = f"Live • {datetime.now().strftime('%H:%M:%S')}"
     
     # Create speed graph
     speed_figure = go.Figure()
     speed_figure.add_trace(go.Scatter(
         y=df['speed_kmh'],
         mode='lines',
-        line=dict(color='#00ff9d', width=2),
+        line=dict(color='#4facfe', width=2),
         fill='tozeroy',
-        fillcolor='rgba(0, 255, 157, 0.1)',
+        fillcolor='rgba(79, 172, 254, 0.1)',
         name='Speed'
     ))
     speed_figure.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0.3)',
-        font=dict(color='#00ff9d', family='monospace', size=10),
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(color='#ccc', family='-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', size=10),
         margin=dict(l=40, r=20, t=30, b=30),
         xaxis=dict(
             showgrid=True,
-            gridcolor='rgba(0, 255, 157, 0.1)',
+            gridcolor='rgba(255, 255, 255, 0.1)',
             title='Data Points',
-            title_font=dict(size=10)
+            title_font=dict(size=10, color='#888')
         ),
         yaxis=dict(
             showgrid=True,
-            gridcolor='rgba(0, 255, 157, 0.1)',
+            gridcolor='rgba(255, 255, 255, 0.1)',
             title='Speed (km/h)',
-            title_font=dict(size=10)
+            title_font=dict(size=10, color='#888')
         ),
         title=dict(
-            text='SPEED PROFILE',
-            font=dict(size=12, color='#00ff9d'),
+            text='Speed Profile',
+            font=dict(size=12, color='#4facfe'),
             x=0.5,
             xanchor='center'
         ),
@@ -541,40 +580,42 @@ def update_dashboard(n, show_path, show_speed_graph, show_heatmap, show_trip_sta
     
     # Create trip statistics content
     trip_stats_content = html.Div([
-        html.Div("TRIP STATS", style={
-            'color': '#00ff9d',
-            'fontSize': '11px',
-            'fontWeight': '700',
-            'letterSpacing': '2px',
-            'marginBottom': '12px',
-            'fontFamily': 'monospace'
+        html.Div("Trip Statistics", style={
+            'color': '#4facfe',
+            'fontSize': '14px',
+            'fontWeight': '600',
+            'textTransform': 'uppercase',
+            'letterSpacing': '1px',
+            'marginBottom': '15px',
+            'borderBottom': '1px solid rgba(255, 255, 255, 0.1)',
+            'paddingBottom': '8px'
         }),
         
         html.Div([
-            html.Span("DIST  ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace'}),
-            html.Span(f"{total_distance/1000:.2f} km", style={'color': '#fff', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
+            html.Span("Distance", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+            html.Span(f"{total_distance/1000:.2f} km", style={'color': '#fff', 'fontSize': '13px', 'fontWeight': '500'})
+        ], style={'marginBottom': '8px', 'display': 'flex', 'justifyContent': 'space-between'}),
+        
+        html.Div([
+            html.Span("Avg Speed", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+            html.Span(f"{avg_speed:.1f} km/h", style={'color': '#fff', 'fontSize': '13px', 'fontWeight': '500'})
+        ], style={'marginBottom': '8px', 'display': 'flex', 'justifyContent': 'space-between'}),
+        
+        html.Div([
+            html.Span("Max Speed", style={'color': '#888', 'fontSize': '11px', 'textTransform': 'uppercase'}),
+            html.Span(f"{max_speed:.1f} km/h", style={'color': '#4facfe', 'fontSize': '13px', 'fontWeight': '600'})
+        ], style={'marginBottom': '8px', 'display': 'flex', 'justifyContent': 'space-between'}),
+        
+        html.Div(style={'borderTop': '1px solid rgba(255, 255, 255, 0.1)', 'margin': '12px 0'}),
+        
+        html.Div([
+            html.Span("Altitude Range", style={'color': '#888', 'fontSize': '10px', 'display': 'block', 'marginBottom': '4px', 'textTransform': 'uppercase'}),
+            html.Span(f"{min_alt:.0f} - {max_alt:.0f} m", style={'color': '#ccc', 'fontSize': '12px'})
         ], style={'marginBottom': '8px'}),
         
         html.Div([
-            html.Span("AVG   ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace'}),
-            html.Span(f"{avg_speed:.1f} km/h", style={'color': '#fff', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '500'})
-        ], style={'marginBottom': '8px'}),
-        
-        html.Div([
-            html.Span("MAX   ", style={'color': '#555', 'fontSize': '10px', 'fontFamily': 'monospace'}),
-            html.Span(f"{max_speed:.1f} km/h", style={'color': '#00ff9d', 'fontSize': '14px', 'fontFamily': 'monospace', 'fontWeight': '600'})
-        ], style={'marginBottom': '8px'}),
-        
-        html.Div(style={'borderTop': '1px solid rgba(0, 255, 157, 0.2)', 'margin': '12px 0'}),
-        
-        html.Div([
-            html.Span("ALT RANGE", style={'color': '#555', 'fontSize': '9px', 'fontFamily': 'monospace', 'display': 'block', 'marginBottom': '4px'}),
-            html.Span(f"{min_alt:.0f} - {max_alt:.0f} m", style={'color': '#aaa', 'fontSize': '12px', 'fontFamily': 'monospace'})
-        ], style={'marginBottom': '8px'}),
-        
-        html.Div([
-            html.Span("POINTS", style={'color': '#555', 'fontSize': '9px', 'fontFamily': 'monospace', 'display': 'block', 'marginBottom': '4px'}),
-            html.Span(f"{total_points:,}", style={'color': '#aaa', 'fontSize': '12px', 'fontFamily': 'monospace'})
+            html.Span("Data Points", style={'color': '#888', 'fontSize': '10px', 'display': 'block', 'marginBottom': '4px', 'textTransform': 'uppercase'}),
+            html.Span(f"{total_points:,}", style={'color': '#ccc', 'fontSize': '12px'})
         ])
     ])
     
