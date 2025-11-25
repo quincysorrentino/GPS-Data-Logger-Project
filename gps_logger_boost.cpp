@@ -315,6 +315,9 @@ private:
                 else
                 {
                     cerr << "[ERROR] Read error: " << error.message() << endl;
+                    cerr << "[INFO] Attempting to continue reading..." << endl;
+                    // Try to continue reading even after errors
+                    startRead();
                 }
             });
     }
