@@ -15,15 +15,13 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 
 ### Real-Time Dashboard in Action
 
-![Dashboard Demo GIF](assets\demo.gif)
-
 #### Dashboard Satellite View
 
-![Dashboard Satellite View](assets\dashboard_sat.png)
+![Dashboard Satellite View](assets/dashboard_sat.png)
 
 #### Dashboard OpenStreetMap View
 
-![Dashboard OpenStreetMap View](assets\dashboard_opensat.png)
+![Dashboard OpenStreetMap View](assets/dashboard_opensat.png)
 
 > **Live GPS tracking system** featuring sub-second updates, multiple map base layers (Dark Matter, OpenStreetMap, Satellite), and dynamic overlays for speed analysis and route visualization.
 
