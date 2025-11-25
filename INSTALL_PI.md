@@ -47,14 +47,20 @@ The Pi 5 uses different UART configurations than earlier models:
 
 ### Transfer Project Files
 
+<<<<<<< HEAD
 **Option A: Git Clone (Recommended)**
 Open a terminal on your Raspberry Pi 5 and run:
+=======
+**Git Clone**
+Open a terminal on your Raspberry Pi and run:
+>>>>>>> 5674c54b8315238f3aef59b8926b64d193560e18
 
 ```bash
 git clone https://github.com/quincysorrentino/GPS-Data-Logger-Project.git
 cd GPS-Data-Logger-Project
 ```
 
+<<<<<<< HEAD
 **Option B: File Transfer (SCP/SFTP)**
 If you have the files on your computer, you can copy them over. Ensure you copy the following files:
 
@@ -69,6 +75,10 @@ If you have the files on your computer, you can copy them over. Ensure you copy 
 
 We provide an automated script optimized for Raspberry Pi 5 and Bookworm OS:
 
+=======
+## Step 2: Installation
+
+>>>>>>> 5674c54b8315238f3aef59b8926b64d193560e18
 1.  **Make the script executable:**
 
     ```bash
@@ -91,6 +101,7 @@ This script will:
 - Compile the C++ GPS logger with optimizations for ARM64
 - Create necessary directories (`logs/`, `data/`)
 
+<<<<<<< HEAD
 ### Manual Installation (Alternative Method)
 
 If the automated script fails or you prefer manual control:
@@ -120,6 +131,8 @@ If the automated script fails or you prefer manual control:
     make -j4
     cd ..
     ```
+=======
+>>>>>>> 5674c54b8315238f3aef59b8926b64d193560e18
 
 ## Step 3: UART Configuration for Pi 5
 
