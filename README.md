@@ -15,6 +15,8 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 
 ### Real-Time Dashboard in Action
 
+<img src="https://media.githubusercontent.com/media/quincysorrentino/GPS-Data-Logger-Project/main/assets/demo.gif" alt="Dashboard Demo" />
+
 #### Dashboard Satellite View
 
 ![Dashboard Satellite View](assets/dashboard_sat.png)
