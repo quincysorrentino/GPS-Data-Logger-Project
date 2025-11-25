@@ -13,7 +13,7 @@ This guide provides detailed instructions for setting up the GPS Data Logger and
 
 You can either clone the repository directly on the Pi or transfer the files from your computer.
 
-**Option A: Git Clone (Recommended)**
+**Git Clone**
 Open a terminal on your Raspberry Pi and run:
 
 ```bash
@@ -21,19 +21,7 @@ git clone <your-repo-url>
 cd GPS-Data-Logger-Project
 ```
 
-**Option B: File Transfer (SCP/SFTP)**
-If you have the files on your computer, you can copy them over. Ensure you copy the following files:
-
-- `gps_logger_boost.cpp`
-- `dashboard.py`
-- `gps_stream_simulator.py`
-- `CMakeLists.txt`
-- `requirements.txt`
-- `install_pi.sh`
-
 ## Step 2: Installation
-
-We have provided an automated script to handle all dependencies and building.
 
 1.  **Make the script executable:**
 
@@ -55,33 +43,6 @@ This script will:
 - Install the required Python libraries for the dashboard.
 - Compile the C++ GPS logger.
 
-### Manual Installation (If the script fails)
-
-If you prefer to install manually, follow these steps:
-
-1.  **Install System Dependencies:**
-
-    ```bash
-    sudo apt-get update
-    sudo apt-get install -y build-essential cmake libboost-all-dev python3-venv
-    ```
-
-2.  **Set up Python Environment:**
-
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ```
-
-3.  **Build C++ Logger:**
-    ```bash
-    mkdir -p build
-    cd build
-    cmake ..
-    make
-    cd ..
-    ```
 
 ## Step 3: Hardware Configuration
 
