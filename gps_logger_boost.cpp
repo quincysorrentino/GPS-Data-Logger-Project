@@ -93,7 +93,10 @@ private:
             if (dotPos == string::npos)
                 return 0.0;
 
-            int degreeDigits = (coord.length() >= 5 && dotPos >= 4) ? 3 : 2;
+            // Latitude: DDMM.MMMM (2 digits degrees)
+            // Longitude: DDDMM.MMMM (3 digits degrees)
+            // Dot position: lat=4, lon=5
+            int degreeDigits = (dotPos >= 5) ? 3 : 2;
 
             double degrees = stod(coord.substr(0, degreeDigits));
             double minutes = stod(coord.substr(degreeDigits));
