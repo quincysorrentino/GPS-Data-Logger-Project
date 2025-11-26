@@ -1,5 +1,86 @@
 # Quick Start Guide
 
+
+### Automated Installation
+
+We provide an automated script optimized for Raspberry Pi 5 and Bookworm OS:
+
+1.  **Make the script executable:**
+
+    ```bash
+    chmod +x install_pi.sh
+    ```
+
+2.  **Run the installer:**
+    ```bash
+    ./install_pi.sh
+    ```
+
+This script will:
+
+- Update system packages (apt-get update/upgrade)
+- Install C++ build tools: GCC 12+, CMake 3.25+
+- Install Boost libraries 1.74+ (required for Boost.Asio)
+- Install Python 3.11+ and pip
+- Create a Python virtual environment (`venv`)
+- Install Python dependencies: plotly, dash, dash-leaflet, pandas
+- Compile the C++ GPS logger with optimizations for ARM64
+- Create necessary directories (`logs/`, `data/`)
+
+
+## Step 3: UART Configuration for Pi 5
+
+Raspberry Pi 5 requires specific UART setup for the GPS HAT:
+
+1.  **Disable Bluetooth on Primary UART**
+
+    Edit the boot configuration:
+
+    ```bash
+    sudo nano /boot/firmware/config.txt
+    ```
+
+    Add this line at the end:
+
+    ```
+    dtoverlay=disable-bt
+    ```
+
+    Save and exit (Ctrl+X, Y, Enter).
+
+2.  **Enable Serial Hardware**
+
+    Run the Raspberry Pi configuration tool:
+
+    ```bash
+    sudo raspi-config
+    ```
+
+    Navigate to:
+
+    - **3 Interface Options**
+    - **I6 Serial Port**
+    - "Would you like a login shell to be accessible over serial?" → **No**
+    - "Would you like the serial port hardware to be enabled?" → **Yes**
+    - Exit and reboot
+
+3.  **Reboot the System**
+
+    ```bash
+    sudo reboot
+    ```
+
+5.  **Add User to dialout Group**
+
+    Allow your user to access serial ports without sudo:
+
+    ```bash
+    sudo usermod -a -G dialout $USER
+    ```
+
+    Logout and login again (or reboot) for this to take effect.
+
+
 ## Running the GPS Logger on Raspberry Pi
 
 # Build the C++ logger
