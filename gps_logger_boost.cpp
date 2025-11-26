@@ -315,20 +315,20 @@ private:
                 else
                 {
                     // Log the error
-                    cerr << "[ERROR] Read error: " << error.message() 
+                    cerr << "[ERROR] Read error: " << error.message()
                          << " (code: " << error.value() << ")" << endl;
-                    
+
                     // On ANY error (including EOF), just keep trying
                     // The GPS might be temporarily unavailable but will recover
                     cerr << "[INFO] Waiting 100ms before retry..." << endl;
-                    
+
                     // Wait a moment before retrying
                     auto timer = make_shared<asio::steady_timer>(io_, chrono::milliseconds(100));
-                    timer->async_wait([this, timer](const boost::system::error_code& ec) {
+                    timer->async_wait([this, timer](const boost::system::error_code &ec)
+                                      {
                         if (!ec) {
                             startRead();
-                        }
-                    });
+                        } });
                 }
             });
     }
