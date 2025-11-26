@@ -10,17 +10,19 @@ from datetime import datetime
 import math
 import random
 
-# Starting position (Madison, WI)
-START_LAT = 43.0731
-START_LON = -89.4012
-START_ALT = 260.0
+# Starting position
+START_LAT = 0.0
+START_LON = 0.0
+START_ALT = 0.0
 
 # Movement state
 current_lat = START_LAT
 current_lon = START_LON
 current_alt = START_ALT
-current_course = random.uniform(0, 360)  # Random initial direction
-current_speed = 40.0  # Start at 40 km/h
+
+# Random initial direction
+current_course = random.uniform(0, 360)  
+current_speed = 40.0
 
 def generate_gps_point(point_num):
     """Generate a GPS point that simulates random realistic movement"""
@@ -31,7 +33,8 @@ def generate_gps_point(point_num):
         # Major course change - turn to a new random direction
         current_course = random.uniform(0, 360)
         print(f"  >> Major direction change: {current_course:.0f}°")
-    # Random course changes (more realistic driving)
+
+    # Random course changes
     # Small adjustments each second, occasional larger turns
     elif random.random() < 0.15:  # 15% chance of significant turn
         course_change = random.uniform(-45, 45)
@@ -40,12 +43,12 @@ def generate_gps_point(point_num):
         course_change = random.uniform(-10, 10)  # Small adjustments
         current_course = (current_course + course_change) % 360
     
-    # Random speed changes (acceleration/deceleration)
+    # Random speed changes
     speed_change = random.uniform(-20, 20)
     current_speed = max(5, min(100, current_speed + speed_change))
     
     # Calculate movement based on speed and course
-    # Speed in km/h, convert to degrees per second (rough approximation)
+    # Speed in km/h, convert to degrees per second
     distance_per_second = current_speed / 3600 / 111  # km to degrees latitude
     
     # Move in current direction
@@ -55,11 +58,11 @@ def generate_gps_point(point_num):
     current_lat += lat_change
     current_lon += lon_change
     
-    # Simulate altitude changes (gradual terrain changes)
+    # Simulate altitude changes
     alt_change = random.uniform(-2, 2)
-    current_alt = max(250, min(300, current_alt + alt_change))  # Keep between 250-300m
+    current_alt = max(250, min(300, current_alt + alt_change))
     
-    # Satellites (8-12, occasionally fewer)
+    # Satellites
     if random.random() < 0.05:  # 5% chance of signal degradation
         satellites = random.randint(6, 8)
     else:

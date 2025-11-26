@@ -1,8 +1,3 @@
-/*
- * GPS Data Logger - C++ Implementation with Boost Libraries
- * Uses Boost.Asio for serial communication and modern C++ practices
- */
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -321,11 +316,9 @@ private:
                     cerr << "[ERROR] Read error: " << error.message()
                          << " (code: " << error.value() << ")" << endl;
 
-                    // On ANY error (including EOF), just keep trying
-                    // The GPS might be temporarily unavailable but will recover
                     cerr << "[INFO] Waiting 100ms before retry..." << endl;
 
-                    // Wait a moment before retrying
+                    // Wait before retrying
                     auto timer = make_shared<asio::steady_timer>(io_, chrono::milliseconds(100));
                     timer->async_wait([this, timer](const boost::system::error_code &ec)
                                       {
@@ -443,7 +436,7 @@ int main(int argc, char *argv[])
 {
     cout << "\n"
          << string(60, '=') << endl;
-    cout << "GPS Data Logger - C++ Boost Implementation" << endl;
+    cout << "GPS Data Logger" << endl;
     cout << string(60, '=') << endl;
 
 // Default serial port
