@@ -7,7 +7,7 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 **Key Capabilities:**
 
 - Sub-second real-time position tracking with 0.5s dashboard updates
-- High-performance C++ logger: 2-5% CPU, 2MB RAM, <100ms latency
+- High-performance C++ logger
 - NMEA 0183 protocol parser with checksum validation
 - Interactive web dashboard with toggleable overlays (speed heatmap, path trails, statistics)
 
@@ -76,12 +76,8 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 
 **GPS Module (PA1616S):**
 
-- **Sensitivity**: -165 dBm (excellent urban performance)
-- **Update Rate**: 1-10 Hz (configurable)
-- **Accuracy**: ±3 meters horizontal (ideal conditions)
-- **Time to First Fix**:
-  - Cold start: ~30 seconds
-  - Warm start: ~5 seconds (with RTC battery backup)
+- **Sensitivity**: -165 dBm
+- **Accuracy**: ±3 meters horizontal
 - **Channels**: 99 acquisition channels (66 tracking)
 - **Satellite Systems**: GPS + GLONASS + Galileo
 - **Communication**: UART serial @ 9600 baud, NMEA 0183 protocol
@@ -91,7 +87,7 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 - **Interface**: Hardware UART on GPIO 14/15 (pins 8/10)
 - **Device Path**: `/dev/serial0` (primary UART)
 - **Power Consumption**: ~150mA @ 3.3V
-- **PPS Output**: GPIO 4 (precise timing signal)
+- **PPS Output**: GPIO 4
 
 ### System Architecture
 
@@ -99,18 +95,18 @@ A high-precision GPS tracking system with real-time visualization, data logging,
 GPS Satellites
     ↓ (L1 1575.42 MHz)
 External Active Antenna (28dB amplification)
-    ↓ (SMA cable - 5 meters)
+    ↓ (SMA cable)
 GPS HAT Module (PA1616S chipset)
     ↓ (UART @ 9600 baud - NMEA sentences)
 Raspberry Pi 5 (GPIO pins 8/10)
-    ↓ (Serial read /dev/serial0)
+    ↓ (Serial read /dev/ttyAMA0)
 C++ Logger (Boost.Asio async I/O)
     ↓ (CSV file write)
 Data Files (logs/ directory)
-    ↓ (File polling every 1s)
+    ↓ (File polling every 0.5s)
 Python Dashboard (Plotly Dash)
     ↓ (HTTP @ port 8050)
-Web Browser (Real-time visualization)
+Web Browser Visualization
 ```
 
 ### Hardware Integration
@@ -120,12 +116,7 @@ Web Browser (Real-time visualization)
 - GPS HAT mounted on 40-pin GPIO header with UART alignment (TX/RX pins 8/10)
 - External antenna connected via uFL connector
 - Powered by 5V 3A USB-C supply
-- CR1220 coin cell battery for RTC backup (faster warm starts)
-
-**Signal Path:**
-
-- Antenna → GPS module → UART (9600 baud) → Raspberry Pi GPIO → Logger software
-- PPS (Pulse Per Second) signal on GPIO 4 for precision timing
+- CR1220 coin cell battery for RTC backup
 
 ### Communication Protocol
 
@@ -151,23 +142,12 @@ Web Browser (Real-time visualization)
 - C++11 with Boost.Asio (async I/O, cross-platform serial communication)
 - Python 3 with Plotly Dash (web framework), Dash-Leaflet (mapping), pandas (data processing)
 
-**Hardware:**
-
-- Raspberry Pi 5 (BCM2712 quad-core, hardware UART)
-- Adafruit Ultimate GPS HAT (PA1616S chipset, 99-channel receiver)
-- External active GPS antenna (28dB gain, SMA connector)
-
 **Protocols & Standards:**
 
 - NMEA 0183 (GPS data sentences: GGA, RMC, GSA, GSV)
 - UART serial @ 9600 baud
 - CSV data logging format
 - HTTP web server (port 8050)
-
-**Build System:**
-
-- CMake (cross-platform C++ builds)
-- pip/requirements.txt (Python dependencies)
 
 ## Additional Resources
 
