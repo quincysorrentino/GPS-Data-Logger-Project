@@ -22,28 +22,14 @@ add_executable(gps_logger_boost gps_logger_boost.cpp)
 # Include Boost headers
 target_include_directories(gps_logger_boost PRIVATE ${Boost_INCLUDE_DIRS})
 
-# Link Boost libraries
-target_link_libraries(gps_logger_boost ${Boost_LIBRARIES})
-
-# Platform-specific settings
-if(WIN32)
-    message(STATUS "Building for Windows")
-    # Windows needs ws2_32 for Boost.Asio
-    target_link_libraries(gps_logger_boost ws2_32)
-else()
-    message(STATUS "Building for Linux/Raspberry Pi")
-    find_package(Threads REQUIRED)
-    target_link_libraries(gps_logger_boost Threads::Threads)
-endif()
+# Link Boost libraries and threading support
+find_package(Threads REQUIRED)
+target_link_libraries(gps_logger_boost ${Boost_LIBRARIES} Threads::Threads)
 
 # Set output directory
 set_target_properties(gps_logger_boost PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
-
-# Print build information
-message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # Print build information
 message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
