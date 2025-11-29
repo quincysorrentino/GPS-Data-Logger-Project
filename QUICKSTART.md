@@ -3,8 +3,6 @@
 
 ### Automated Installation
 
-We provide an automated script optimized for Raspberry Pi 5 and Bookworm OS:
-
 1.  **Make the script executable:**
 
     ```bash
@@ -20,11 +18,11 @@ This script will:
 
 - Update system packages (apt-get update/upgrade)
 - Install C++ build tools: GCC 12+, CMake 3.25+
-- Install Boost libraries 1.74+ (required for Boost.Asio)
+- Install Boost libraries 1.74+
 - Install Python 3.11+ and pip
 - Create a Python virtual environment (`venv`)
-- Install Python dependencies: plotly, dash, dash-leaflet, pandas
-- Compile the C++ GPS logger with optimizations for ARM64
+- Install Python dependencies
+- Compile the C++ GPS logger
 - Create necessary directories (`logs/`, `data/`)
 
 
@@ -45,8 +43,6 @@ Raspberry Pi 5 requires specific UART setup for the GPS HAT:
     ```
     dtoverlay=disable-bt
     ```
-
-    Save and exit (Ctrl+X, Y, Enter).
 
 2.  **Enable Serial Hardware**
 
@@ -78,7 +74,7 @@ Raspberry Pi 5 requires specific UART setup for the GPS HAT:
     sudo usermod -a -G dialout $USER
     ```
 
-    Logout and login again (or reboot) for this to take effect.
+   Reboot
 
 
 ## Running the GPS Logger on Raspberry Pi
@@ -99,7 +95,7 @@ sudo systemctl stop gpsd.socket
 sudo systemctl stop gpsd
 sudo killall gpsd 2>/dev/null
 
-# Run from project root (so logs/ directory is found)
+# Run from project root
 cd ~/Projects/GPS-Data-Logger-Project
 ./build/bin/gps_logger_boost /dev/ttyAMA0
 ```
